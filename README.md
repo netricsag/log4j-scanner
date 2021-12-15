@@ -1,4 +1,11 @@
 # log4j-scanner
+![Build Status](https://github.com/bluestoneag/log4j-scanner/workflows/CI/badge.svg) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/bluestoneag/log4j-scanner)](https://goreportcard.com/report/github.com/bluestoneag/log4j-scanner) 
+![GitHub top language](https://img.shields.io/github/languages/top/bluestoneag/log4j-scanner)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/bluestoneag/log4j-scanner) 
+![open issues](https://img.shields.io/github/issues-raw/bluestoneag/log4j-scanner)
+![license](https://img.shields.io/github/license/bluestoneag/log4j-scanner)
+
 A scanning tool to check if the system is vuln and report it to the [log4j-collector](https://github.com/bluestoneag/log4j-collector) which will display the data at the [log4j-collector-frontend](https://github.com/bluestoneag/log4j-collector-frontend).
 
 ## Algorithm Autor
