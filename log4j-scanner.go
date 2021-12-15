@@ -100,7 +100,7 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 func init() {
 
 	flag.Var(&excludes, "exclude", "paths to exclude")
-	flag.StringVar(&apiUrl, "api", "https://localhost:8443", "API URL")
+	flag.StringVar(&apiUrl, "api", "", "API URL")
 	flag.BoolVar(&verbose, "verbose", false, "log every archive file considered")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
 	flag.BoolVar(&quiet, "quiet", false, "no ouput unless vulnerable")
@@ -180,7 +180,7 @@ func main() {
 		}
 	}
 
-	if len(vulnFiles) > 0 && apiUrl != "" {
+	if apiUrl != "" {
 		// Parse the data to json API request
 		var mapSlice []map[string]string
 		for _, f := range vulnFiles {
