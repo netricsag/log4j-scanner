@@ -76,8 +76,15 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 			if desc := filter.IsVulnerableClass(buf.Bytes(), file.Name, !ignoreV1); desc != "" {
 				// fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 
+				// Get absolute path to jar file
+				absPath, err := filepath.Abs(path)
+				if err != nil {
+					fmt.Fprintf(logFile, "can't get absolute path to JAR file: %s (%s): %v\n", path, file.Name, err)
+					continue
+				}
+
 				// Make a POST the data to the API
-				vulnFiles = append(vulnFiles, path)
+				vulnFiles = append(vulnFiles, absPath)
 				continue
 			}
 
