@@ -24,7 +24,7 @@ After the scan is complete, the results are reported to the log4j-collector api.
 ```
 **Example**
 ```bash
-./log4j-scanner --api http://localhost:8080/log4j-collector/api/v1/log4j-scanner/scan --verbose --log vulns.log /path/to/jar/files
+./log4j-scanner --api http://localhost:8080/log4j-collector/api/v1/reports --verbose --log vulns.log /path/to/jar/files
 ```
 **Output**
 ```
