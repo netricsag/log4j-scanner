@@ -50,12 +50,18 @@ func (flags excludeFlags) Has(path string) bool {
 }
 
 func handleJar(path string, ra io.ReaderAt, sz int64) {
+	// Get absolute path to jar file
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		fmt.Fprintf(errFile, "Could not get absolute path to %s: %s\n", path, err)
+		absPath = path
+	}
 	if verbose {
-		fmt.Fprintf(logFile, "Inspecting %s...\n", path)
+		fmt.Fprintf(logFile, "Inspecting %s...\n", absPath)
 	}
 	zr, err := zip.NewReader(ra, sz)
 	if err != nil {
-		fmt.Fprintf(logFile, "cant't open JAR file: %s (size %d): %v\n", path, sz, err)
+		fmt.Fprintf(logFile, "cant't open JAR file: %s (size %d): %v\n", absPath, sz, err)
 		return
 	}
 	for _, file := range zr.File {
@@ -63,12 +69,12 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 		case ".class":
 			fr, err := file.Open()
 			if err != nil {
-				fmt.Fprintf(logFile, "can't open JAR file member for reading: %s (%s): %v\n", path, file.Name, err)
+				fmt.Fprintf(logFile, "can't open JAR file member for reading: %s (%s): %v\n", absPath, file.Name, err)
 				continue
 			}
 			buf := bytes.NewBuffer(nil)
 			if _, err = io.Copy(buf, fr); err != nil {
-				fmt.Fprintf(logFile, "can't read JAR file member: %s (%s): %v\n", path, file.Name, err)
+				fmt.Fprintf(logFile, "can't read JAR file member: %s (%s): %v\n", absPath, file.Name, err)
 				fr.Close()
 				continue
 			}
@@ -77,20 +83,20 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 				// fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 
 				// Make a POST the data to the API
-				vulnFiles = append(vulnFiles, path)
+				vulnFiles = append(vulnFiles, absPath)
 				continue
 			}
 
 		case ".jar", ".war", ".ear":
 			fr, err := file.Open()
 			if err != nil {
-				fmt.Fprintf(logFile, "can't open JAR file member for reading: %s (%s): %v\n", path, file.Name, err)
+				fmt.Fprintf(logFile, "can't open JAR file member for reading: %s (%s): %v\n", absPath, file.Name, err)
 				continue
 			}
 			buf, err := ioutil.ReadAll(fr)
 			fr.Close()
 			if err != nil {
-				fmt.Fprintf(logFile, "can't read JAR file member: %s (%s): %v\n", path, file.Name, err)
+				fmt.Fprintf(logFile, "can't read JAR file member: %s (%s): %v\n", absPath, file.Name, err)
 			}
 			handleJar(path+"::"+file.Name, bytes.NewReader(buf), int64(len(buf)))
 		}
@@ -100,7 +106,7 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 func init() {
 
 	flag.Var(&excludes, "exclude", "paths to exclude")
-	flag.StringVar(&apiUrl, "api", "https://localhost:8443", "API URL")
+	flag.StringVar(&apiUrl, "api", "", "API URL")
 	flag.BoolVar(&verbose, "verbose", false, "log every archive file considered")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
 	flag.BoolVar(&quiet, "quiet", false, "no ouput unless vulnerable")
@@ -130,6 +136,7 @@ func init() {
 
 func main() {
 
+	// Recoursively scan all the files in the given path
 	for _, root := range flag.Args() {
 		filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -180,7 +187,7 @@ func main() {
 		}
 	}
 
-	if len(vulnFiles) > 0 && apiUrl != "" {
+	if apiUrl != "" {
 		// Parse the data to json API request
 		var mapSlice []map[string]string
 		for _, f := range vulnFiles {
