@@ -8,6 +8,10 @@
 
 A scanning tool to check if the system is vuln and report it to the [log4j-collector](https://github.com/bluestoneag/log4j-collector) which will display the data at the [log4j-collector-frontend](https://github.com/bluestoneag/log4j-collector-frontend).
 
+## Collecting data
+- [log4j-collector](https://github.com/bluestoneag/log4j-collector) (HTTP REST API)
+- [log4j-collector-frontend](https://github.com/bluestoneag/log4j-collector-frontend) (Web UI)
+
 ## Algorithm Author
 This tool is based on the [local-log4j-vuln-scanner](https://github.com/hillu/local-log4j-vuln-scanner) from Hillu. (Leave a star to support him)
 
